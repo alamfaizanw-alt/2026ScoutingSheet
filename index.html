@@ -1678,6 +1678,21 @@
 // ==================== DATA STORE ====================
 const STORAGE_KEY = 'frc_scout_humber2026';
 
+// ── Google Sheets sync ──────────────────────────────────────────────
+// Paste your Apps Script Web App URL below (leave empty to disable)
+const SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_ID/exec';
+
+function sendToSheet(entry) {
+  if (!SCRIPT_URL) return;
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(entry)
+  }).catch(() => {}); // silent fail — data is already saved locally
+}
+// ────────────────────────────────────────────────────────────────────
+
 function loadData() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"matches":[],"pits":[]}');
@@ -1973,6 +1988,7 @@ function submitMatch() {
   } else {
     data.matches.push(entry);
     saveData(data);
+    sendToSheet(entry);
     showToast(`✓ Match ${entry.matchNum} saved for Team ${entry.teamNum}`, 'success');
   }
 
@@ -2120,6 +2136,7 @@ function submitPit() {
     showToast('Pit entry updated for Team ' + teamNum, 'success');
   } else {
     data.pits.push(entry);
+    sendToSheet(entry);
     showToast('Pit entry saved for Team ' + teamNum, 'success');
   }
   saveData(data);

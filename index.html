@@ -1,0 +1,2678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#100808">
+<title>Scouting // Rebuilt 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:           #0a0606;
+    --bg2:          #110808;
+    --bg3:          #180b0b;
+    --card:         #0e0707;
+    --border:       #3a1410;
+    --border-red:   #661a10;
+    --border-gold:  #5a3a10;
+    --border-bright:#6b2818;
+    --accent:       #e8a020;
+    --accent2:      #cc2200;
+    --accent3:      #f5c842;
+    --accent-dim:   rgba(232,160,32,0.13);
+    --red-dim:      rgba(204,34,0,0.14);
+    --text:         #f0d4a8;
+    --text-dim:     #7a5038;
+    --text-bright:  #ffffff;
+    --red:          #cc2200;
+    --red-bright:   #ee3300;
+    --gold:         #e8a020;
+    --gold-bright:  #f5c842;
+    --green:        #06d6a0;
+    --purple:       #a855f7;
+    --shadow:       0 4px 32px rgba(0,0,0,0.85);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  html { font-size: 16px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Diagonal red-stripe texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -52deg,
+      transparent,
+      transparent 38px,
+      rgba(204,34,0,0.022) 38px,
+      rgba(204,34,0,0.022) 39px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.04) 3px,
+      rgba(0,0,0,0.04) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Corner rune decos – red TL/BR, gold TR/BL */
+  .corner-deco {
+    position: fixed;
+    width: 60px; height: 60px;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .corner-deco::before, .corner-deco::after { content: ''; position: absolute; }
+  .corner-tl { top: 0; left: 0; }
+  .corner-tl::before { width: 2px; height: 48px; top: 0; left: 0; background: var(--red); opacity: 0.85; }
+  .corner-tl::after  { height: 2px; width: 48px;  top: 0; left: 0; background: var(--red); opacity: 0.85; }
+  .corner-tr { top: 0; right: 0; }
+  .corner-tr::before { width: 2px; height: 48px; top: 0; right: 0; background: var(--gold); opacity: 0.6; }
+  .corner-tr::after  { height: 2px; width: 48px;  top: 0; right: 0; background: var(--gold); opacity: 0.6; }
+  .corner-bl { bottom: 0; left: 0; }
+  .corner-bl::before { width: 2px; height: 48px; bottom: 0; left: 0; background: var(--gold); opacity: 0.6; }
+  .corner-bl::after  { height: 2px; width: 48px;  bottom: 0; left: 0; background: var(--gold); opacity: 0.6; }
+  .corner-br { bottom: 0; right: 0; }
+  .corner-br::before { width: 2px; height: 48px; bottom: 0; right: 0; background: var(--red); opacity: 0.85; }
+  .corner-br::after  { height: 2px; width: 48px;  bottom: 0; right: 0; background: var(--red); opacity: 0.85; }
+
+  /* HEADER */
+  header {
+    position: sticky; top: 0; z-index: 200;
+    background: linear-gradient(180deg, #080404 0%, rgba(8,4,4,0.97) 100%);
+    border-bottom: 1px solid var(--border-red, #661a10);
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    backdrop-filter: blur(12px);
+    box-shadow: inset 3px 0 0 var(--red), 0 2px 24px rgba(0,0,0,0.7);
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    font-size: 1.9rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px rgba(204,34,0,0.75));
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    background: linear-gradient(90deg, var(--red-bright, #ee3300) 0%, var(--gold) 55%, var(--gold-bright, #f5c842) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+
+  .logo-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    margin-top: 1px;
+  }
+
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* NAV TABS */
+  nav {
+    background: var(--bg2);
+    border-bottom: 2px solid var(--border-red, #661a10);
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+  }
+  nav::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--red) 0%, transparent 35%, transparent 65%, var(--gold) 100%);
+    opacity: 0.5;
+  }
+  nav::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    flex-shrink: 0;
+    padding: 0 20px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .nav-tab:hover { color: var(--text); background: rgba(204,34,0,0.05); }
+  .nav-tab.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+    background: rgba(232,160,32,0.07);
+  }
+
+  .tab-icon { font-size: 1rem; }
+
+  /* MAIN CONTENT */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 100px;
+  }
+
+  /* SECTION TITLES */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 22px;
+    background: linear-gradient(180deg, var(--red) 0%, var(--gold) 100%);
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--red) 0%, var(--gold) 50%, var(--red) 100%);
+    opacity: 0.6;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--red) 0%, transparent 70%);
+    opacity: 0.4;
+  }
+
+  .card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* FORM ELEMENTS */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 480px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+  }
+
+  .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-grid.cols-1 { grid-template-columns: 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .field.span-2 { grid-column: span 2; }
+  .field.span-full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  label .req { color: var(--accent2); margin-left: 2px; }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  select,
+  textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 10px 12px;
+    color: var(--text-bright);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(232,160,32,0.18);
+  }
+
+  input::placeholder, textarea::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+  }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235a7aa8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  select option { background: var(--bg2); }
+
+  /* RADIO / CHECKBOX GROUPS */
+  .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .btn-option {
+    position: relative;
+  }
+
+  .btn-option input {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .btn-option label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 13px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: none;
+    color: var(--text-dim);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-option input:checked + label {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 8px rgba(232,160,32,0.2);
+  }
+
+  .btn-option label:hover { border-color: var(--border-bright); color: var(--text); }
+
+  /* RATING BUTTONS */
+  .rating-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .rating-btn {
+    width: 40px; height: 40px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-dim);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .rating-btn:hover { border-color: var(--border-bright); color: var(--text); }
+  .rating-btn.active-1 { background: rgba(204,34,0,0.25); border-color: var(--red); color: var(--red-bright, #ee3300); }
+  .rating-btn.active-2 { background: rgba(210,70,0,0.2); border-color: #d05010; color: #e06820; }
+  .rating-btn.active-3 { background: rgba(232,160,32,0.15); border-color: var(--gold); color: var(--gold); }
+  .rating-btn.active-4 { background: rgba(245,200,66,0.15); border-color: var(--gold-bright, #f5c842); color: var(--gold-bright, #f5c842); }
+  .rating-btn.active-5 { background: rgba(6,214,160,0.12); border-color: var(--green); color: var(--green); }
+  .rating-btn.active-na { background: rgba(122,80,56,0.2); border-color: var(--text-dim); color: var(--text-dim); }
+
+  /* COUNTER */
+  .counter {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .counter-btn {
+    width: 44px; height: 100%;
+    border: none;
+    background: rgba(204,34,0,0.1);
+    color: var(--text-dim);
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .counter-btn:hover { background: rgba(204,34,0,0.26); color: var(--red-bright, #ee3300); }
+  .counter-btn:active { background: rgba(232,160,32,0.18); color: var(--gold); }
+  .counter-val {
+    flex: 1;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-bright);
+    min-width: 40px;
+  }
+
+  /* TOGGLE */
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .toggle {
+    position: relative;
+    width: 46px; height: 24px;
+    flex-shrink: 0;
+  }
+
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .toggle-slider::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    top: 3px; left: 3px;
+    background: var(--text-dim);
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  .toggle input:checked + .toggle-slider {
+    background: rgba(232,160,32,0.15);
+    border-color: var(--accent);
+  }
+
+  .toggle input:checked + .toggle-slider::after {
+    background: var(--accent);
+    transform: translateX(22px);
+    box-shadow: 0 0 8px rgba(232,160,32,0.5);
+  }
+
+  .toggle-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--red), var(--border), var(--gold), var(--border), var(--red));
+    opacity: 0.45;
+    margin: 16px 0;
+  }
+
+  /* BUTTONS */
+  .btn {
+    padding: 11px 22px;
+    border-radius: 5px;
+    border: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--red) 0%, var(--gold) 100%);
+    color: #0a0303;
+    font-weight: 900;
+    box-shadow: 0 0 18px rgba(204,34,0,0.3), 0 0 8px rgba(232,160,32,0.2);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--red-bright, #ee3300) 0%, var(--gold-bright, #f5c842) 100%);
+    box-shadow: 0 0 28px rgba(204,34,0,0.5), 0 0 14px rgba(232,160,32,0.35);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-danger {
+    background: rgba(255,59,92,0.15);
+    color: var(--red);
+    border: 1px solid var(--red);
+  }
+
+  .btn-danger:hover { background: rgba(255,59,92,0.25); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { border-color: var(--border-bright); color: var(--text); }
+
+  .btn-success {
+    background: rgba(6,214,160,0.15);
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+
+  .btn-success:hover { background: rgba(6,214,160,0.25); }
+
+  .btn-export {
+    background: rgba(255,209,102,0.15);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+  }
+
+  .btn-export:hover { background: rgba(255,209,102,0.25); }
+
+  /* PAGE VIEWS */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* MATCH LIST */
+  .match-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .match-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-wrap: wrap;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .match-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--red), var(--gold));
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .match-item:hover { border-color: var(--border-red, #661a10); background: rgba(18,6,6,0.9); }
+  .match-item:hover::before { opacity: 1; }
+
+  .match-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .match-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 60px;
+  }
+
+  .match-team {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-bright);
+  }
+
+  .match-team-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .match-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .badge-blue { background: rgba(0,212,255,0.15); color: var(--accent); }
+  .badge-red { background: rgba(255,59,92,0.15); color: var(--red); }
+  .badge-green { background: rgba(6,214,160,0.15); color: var(--green); }
+  .badge-gold { background: rgba(255,209,102,0.15); color: var(--gold); }
+  .badge-purple { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .badge-orange { background: rgba(255,107,53,0.15); color: var(--accent2); }
+
+  /* TEAM TABLE */
+  .team-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    min-width: 600px;
+  }
+
+  th {
+    background: var(--bg2);
+    padding: 10px 12px;
+    text-align: left;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  th:hover { color: var(--accent); }
+  th.sorted { color: var(--accent); }
+  th .sort-arrow { margin-left: 4px; }
+
+  td {
+    padding: 11px 12px;
+    border-bottom: 1px solid rgba(30,45,71,0.5);
+    vertical-align: middle;
+    color: var(--text);
+  }
+
+  tr:hover td { background: rgba(204,34,0,0.04); }
+
+  .td-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .td-team {
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  /* SEARCH & FILTER BAR */
+  .search-bar {
+    position: relative;
+    margin-bottom: 16px;
+  }
+
+  .search-bar input {
+    padding-left: 36px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    pointer-events: none;
+  }
+
+  /* STAT CARDS */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--red), var(--gold));
+    opacity: 0.75;
+  }
+
+  .stat-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--text-bright);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 80px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--bg3);
+    border: 1px solid var(--border-bright);
+    border-radius: 6px;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: var(--text-bright);
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 9000;
+    pointer-events: none;
+    white-space: nowrap;
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 20px rgba(232,160,32,0.2); }
+  .toast.error { border-color: var(--red); color: var(--red); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+  }
+
+  .empty-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+  .empty-text { font-size: 0.9rem; font-weight: 600; letter-spacing: 0.05em; }
+
+  /* BOTTOM NAV for mobile */
+  .bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg2);
+    border-top: 1px solid var(--border-red, #661a10);
+    z-index: 200;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -2px 20px rgba(0,0,0,0.6), inset 0 1px 0 var(--red);
+  }
+
+  @media (max-width: 640px) {
+    .bottom-nav { display: flex; }
+    nav { display: none; }
+    main { padding-bottom: 90px; }
+  }
+
+  .bottom-nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .bottom-nav-btn.active { color: var(--accent); }
+  .bottom-nav-btn .bn-icon { font-size: 1.2rem; }
+
+  /* TEAM DETAIL */
+  .team-detail-header {
+    background: var(--card);
+    border: 1px solid var(--border-red, #661a10);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .team-detail-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--red) 0%, var(--gold) 50%, var(--red) 100%);
+  }
+
+  .team-number-big {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--red-bright, #ee3300), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .team-name-big {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-top: 4px;
+  }
+
+  /* MATCH SCORE ROW */
+  .match-score-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .score-chip {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .score-chip.highlight {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  /* RP DISPLAY */
+  .rp-display {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .rp-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+  }
+
+  .rp-dot.earned { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 4px var(--gold); }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap {
+    height: 6px;
+    background: var(--bg);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  /* ANIMATIONS */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page.active { animation: slideIn 0.2s ease; }
+
+  /* ALLIANCE */
+  .alliance-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .alliance-red { background: rgba(255,59,92,0.15); color: var(--red); border: 1px solid rgba(255,59,92,0.3); }
+  .alliance-blue { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+
+  .info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .info-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 10px 12px;
+  }
+
+  .info-item-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+  }
+
+  .info-item-val {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  /* Section description */
+  .section-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+  }
+
+  /* Highlight row */
+  .highlight-row {
+    background: rgba(204,34,0,0.05);
+    border: 1px solid rgba(232,160,32,0.2);
+    border-left: 3px solid var(--red);
+    border-radius: 5px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Mobile optimizations */
+  @media (max-width: 480px) {
+    .form-grid.cols-3 { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .team-detail-header { flex-direction: column; }
+    .field.span-2 { grid-column: span 1; }
+  }
+</style>
+
+  <style>
+    .mascot-accent {
+      position: absolute;
+      bottom: 0;
+      opacity: 0.92;
+      pointer-events: none;
+      z-index: 0;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+    }
+    .mascot-left  { left: 6px; transform: scaleX(-1); }
+    .mascot-right { right: 6px; }
+    .page-inner-wrap { position: relative; }
+    .mascot-float { position: absolute; pointer-events: none; z-index: 0; }
+  </style>
+</head>
+<body>
+
+<div class="corner-deco corner-tl"></div>
+<div class="corner-deco corner-tr"></div>
+<div class="corner-deco corner-bl"></div>
+<div class="corner-deco corner-br"></div>
+
+<header>
+  <div class="header-logo">
+    <span class="logo-icon">⚔️</span>
+    <div>
+      <div class="logo-text">SCOUTING</div>
+      <div class="logo-sub">REBUILT 2026 // FRC</div>
+    </div>
+  </div>
+  <div class="header-status">
+    <div class="status-dot"></div>
+    <span id="dataCount">0 ENTRIES</span>
+  </div>
+</header>
+
+<nav id="desktopNav">
+  <button class="nav-tab active" onclick="switchPage('match')" data-page="match">
+    <span class="tab-icon">🤖</span> Match Scout
+  </button>
+  <button class="nav-tab" onclick="switchPage('pit')" data-page="pit">
+    <span class="tab-icon">🔧</span> Pit Scout
+  </button>
+  <button class="nav-tab" onclick="switchPage('teams')" data-page="teams">
+    <span class="tab-icon">📊</span> Teams
+  </button>
+  <button class="nav-tab" onclick="switchPage('export')" data-page="export">
+    <span class="tab-icon">💾</span> Export
+  </button>
+</nav>
+
+<main>
+  <!-- ==================== MATCH SCOUTING ==================== -->
+  <div class="page active" id="page-match">
+    <div class="section-header">
+      <div class="section-title">Match Scouting</div>
+      <button class="btn btn-ghost" onclick="resetMatchForm()">↺ Clear</button>
+    </div>
+    <p class="section-desc">Record observations during or immediately after each qualification match.</p>
+
+    <!-- Identity -->
+    <div class="card">
+      <div class="card-title">🪪 Scout Identity</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Scout Name <span class="req">*</span></label>
+          <input type="text" id="m_scoutName" placeholder="Your name" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Match # <span class="req">*</span></label>
+          <input type="number" id="m_matchNum" placeholder="e.g. 12" min="1">
+        </div>
+        <div class="field">
+          <label>Team Number <span class="req">*</span></label>
+          <input type="number" id="m_teamNum" placeholder="e.g. 1234" min="1">
+        </div>
+        <div class="field">
+          <label>Team Name</label>
+          <input type="text" id="m_teamName" placeholder="Team name">
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="field">
+        <label>Alliance</label>
+        <div class="btn-group">
+          <div class="btn-option"><input type="radio" name="m_alliance" id="a_red" value="Red"><label for="a_red">🔴 Red</label></div>
+          <div class="btn-option"><input type="radio" name="m_alliance" id="a_blue" value="Blue"><label for="a_blue">🔵 Blue</label></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Autonomous -->
+    <div class="card">
+      <div class="card-title">🤖 Autonomous Period</div>
+      <p style="font-size:0.72rem;color:var(--text-dim);margin-bottom:14px;line-height:1.7">
+        Fuel (active HUB) = <strong style="color:var(--accent)">1 pt each</strong> &nbsp;|&nbsp;
+        Tower Lvl 1 = <strong style="color:var(--accent)">15 pts</strong> (max 2 robots)
+      </p>
+      <div class="form-grid">
+        <div class="field">
+          <label>Fuel Scored — Active HUB <span style="color:var(--accent)">(×1 pt)</span></label>
+          <div class="counter" id="cnt_autoFuelActive">
+            <button class="counter-btn" onclick="adjustCounter('autoFuelActive',-1);calcScores()">−</button>
+            <input type="number" id="val_autoFuelActive" value="0" min="0"
+              style="flex:1;text-align:center;font-family:'Orbitron',monospace;font-weight:700;font-size:1rem;color:var(--text-bright);background:transparent;border:none;outline:none;width:100%;min-width:40px;"
+              oninput="counters.autoFuelActive=Math.max(0,parseInt(this.value)||0);this.value=counters.autoFuelActive;calcScores()">
+            <button class="counter-btn" onclick="adjustCounter('autoFuelActive',1);calcScores()">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Tower Level (Auto) <span style="color:var(--accent)">(Lvl 1 = 15 pts)</span></label>
+          <select id="m_autoClimb" onchange="calcScores()">
+            <option value="0">None / N/A</option>
+            <option value="15">Level 1 — 15 pts</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;gap:12px">
+        <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase">Auto Points:</span>
+        <span id="autoScore" style="font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;color:var(--accent)">0</span>
+      </div>
+    </div>
+
+    <!-- Teleop -->
+    <div class="card">
+      <div class="card-title">🕹️ Teleop Period</div>
+      <p style="font-size:0.72rem;color:var(--text-dim);margin-bottom:14px;line-height:1.7">
+        Fuel (active HUB) = <strong style="color:var(--accent)">1 pt each</strong> &nbsp;|&nbsp;
+        Tower Lvl 1 = <strong style="color:var(--accent)">10 pts</strong> &nbsp;|&nbsp;
+        Lvl 2 = <strong style="color:var(--accent)">20 pts</strong> &nbsp;|&nbsp;
+        Lvl 3 = <strong style="color:var(--accent)">30 pts</strong>
+      </p>
+      <div class="form-grid">
+        <div class="field">
+          <label>Fuel Scored — Active HUB <span style="color:var(--accent)">(×1 pt)</span></label>
+          <div class="counter" id="cnt_teleFuelActive">
+            <button class="counter-btn" onclick="adjustCounter('teleFuelActive',-1);calcScores()">−</button>
+            <input type="number" id="val_teleFuelActive" value="0" min="0"
+              style="flex:1;text-align:center;font-family:'Orbitron',monospace;font-weight:700;font-size:1rem;color:var(--text-bright);background:transparent;border:none;outline:none;width:100%;min-width:40px;"
+              oninput="counters.teleFuelActive=Math.max(0,parseInt(this.value)||0);this.value=counters.teleFuelActive;calcScores()">
+            <button class="counter-btn" onclick="adjustCounter('teleFuelActive',1);calcScores()">+</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Tower Climb Result <span style="color:var(--accent)">(pts shown)</span></label>
+          <select id="m_climb" onchange="calcScores()">
+            <option value="0">Did Not Attempt</option>
+            <option value="-1">Attempted — Failed</option>
+            <option value="10">Level 1 — 10 pts</option>
+            <option value="20">Level 2 — 20 pts</option>
+            <option value="30">Level 3 — 30 pts</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Role</label>
+          <div class="btn-group">
+            <div class="btn-option"><input type="radio" name="m_role" id="r_shooter" value="Shooter"><label for="r_shooter">🎯 Shooter</label></div>
+            <div class="btn-option"><input type="radio" name="m_role" id="r_defender" value="Defender"><label for="r_defender">🛡️ Defender</label></div>
+            <div class="btn-option"><input type="radio" name="m_role" id="r_feeder" value="Feeder"><label for="r_feeder">⚙️ Feeder</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live score breakdown -->
+      <div style="margin-top:14px;padding:12px 14px;background:var(--bg);border:1px solid var(--border-bright);border-radius:6px">
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px">Estimated Score This Match</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end">
+          <div>
+            <div style="font-size:0.65rem;color:var(--text-dim)">Auto</div>
+            <div id="scoreAuto" style="font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;color:var(--accent)">0</div>
+          </div>
+          <div style="color:var(--text-dim);font-size:1.2rem;padding-bottom:2px">+</div>
+          <div>
+            <div style="font-size:0.65rem;color:var(--text-dim)">Teleop</div>
+            <div id="scoreTele" style="font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;color:var(--accent)">0</div>
+          </div>
+          <div style="color:var(--text-dim);font-size:1.2rem;padding-bottom:2px">=</div>
+          <div>
+            <div style="font-size:0.65rem;color:var(--text-dim)">Total</div>
+            <div id="scoreTotal" style="font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--accent3)">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Endgame / Climb -->
+    <div class="card">
+      <div class="card-title">🏆 Ranking Points</div>
+      <p style="font-size:0.72rem;color:var(--text-dim);margin-bottom:16px;line-height:1.8">
+        <strong style="color:var(--accent)">Traversal RP</strong> — Alliance Tower pts ≥ threshold &nbsp;|&nbsp;
+        <strong style="color:var(--accent)">Energized RP</strong> — Alliance Fuel pts ≥ first threshold &nbsp;|&nbsp;
+        <strong style="color:var(--accent)">Supercharged RP</strong> — Alliance Fuel pts ≥ second threshold &nbsp;|&nbsp;
+        <strong style="color:var(--accent)">Win = +3 RP</strong> &nbsp; <span style="color:var(--text-dim)">Tie = +1 RP</span>
+      </p>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Alliance Tower Points Total <span style="color:var(--text-dim);font-weight:400;font-size:0.72rem">(auto-filled from this robot — adjust for alliance)</span></label>
+          <input type="number" id="m_allianceClimbPts" placeholder="0" min="0"
+            oninput="this.dataset.manual='1';updateRPPreview()">
+          <div id="climbRP_hint" style="font-size:0.7rem;margin-top:4px;color:var(--text-dim)">≥50 pts = Traversal RP</div>
+        </div>
+        <div class="field">
+          <label>Alliance Fuel Points Total <span style="color:var(--text-dim);font-weight:400;font-size:0.72rem">(auto-filled from this robot — adjust for alliance)</span></label>
+          <input type="number" id="m_allianceFuelPts" placeholder="0" min="0"
+            oninput="this.dataset.manual='1';updateRPPreview()">
+          <div id="fuelRP_hint" style="font-size:0.7rem;margin-top:4px;color:var(--text-dim)">≥100 pts = Energized RP, ≥360 pts = Supercharged RP</div>
+        </div>
+        <div class="field span-2">
+          <label>Match Outcome</label>
+          <div class="btn-group">
+            <div class="btn-option"><input type="radio" name="m_winRP" id="wrp_yes" value="3" onchange="updateRPPreview()"><label for="wrp_yes">🏆 Win (+3 RP)</label></div>
+            <div class="btn-option"><input type="radio" name="m_winRP" id="wrp_tie" value="1" onchange="updateRPPreview()"><label for="wrp_tie">~ Tie (+1 RP)</label></div>
+            <div class="btn-option"><input type="radio" name="m_winRP" id="wrp_no" value="0" onchange="updateRPPreview()"><label for="wrp_no">✗ Loss</label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live RP Preview -->
+      <div id="rpPreview" style="margin-top:14px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase">RP This Match:</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <span id="rp_climb_badge" class="badge" style="opacity:0.35">Traversal +1</span>
+          <span id="rp_fuel1_badge" class="badge" style="opacity:0.35">Energized +1</span>
+          <span id="rp_fuel2_badge" class="badge" style="opacity:0.35">Supercharged +1</span>
+          <span id="rp_win_badge" class="badge" style="opacity:0.35">Win +3</span>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:baseline;gap:5px">
+          <span id="rp_total" style="font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:900;color:var(--gold)">0</span>
+          <span style="font-size:0.7rem;color:var(--text-dim);letter-spacing:0.1em">/ 6 RP</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consistency -->
+    <div class="card">
+      <div class="card-title">📈 Consistency Ratings</div>
+      <p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:14px;letter-spacing:0.03em;">1 = Poor &nbsp; 3 = Average &nbsp; 5 = Excellent</p>
+
+      <div class="field" style="margin-bottom:14px">
+        <label>Climb Consistency</label>
+        <div class="rating-group" id="rating_climb">
+          <button class="rating-btn active-na" onclick="setRating('climb',0)">N/A</button>
+          <button class="rating-btn" onclick="setRating('climb',1)">1</button>
+          <button class="rating-btn" onclick="setRating('climb',2)">2</button>
+          <button class="rating-btn" onclick="setRating('climb',3)">3</button>
+          <button class="rating-btn" onclick="setRating('climb',4)">4</button>
+          <button class="rating-btn" onclick="setRating('climb',5)">5</button>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:14px">
+        <label>Scoring Mechanism Consistency</label>
+        <div class="rating-group" id="rating_scoring">
+          <button class="rating-btn active-na" onclick="setRating('scoring',0)">N/A</button>
+          <button class="rating-btn" onclick="setRating('scoring',1)">1</button>
+          <button class="rating-btn" onclick="setRating('scoring',2)">2</button>
+          <button class="rating-btn" onclick="setRating('scoring',3)">3</button>
+          <button class="rating-btn" onclick="setRating('scoring',4)">4</button>
+          <button class="rating-btn" onclick="setRating('scoring',5)">5</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Intake Consistency</label>
+        <div class="rating-group" id="rating_intake">
+          <button class="rating-btn active-na" onclick="setRating('intake',0)">N/A</button>
+          <button class="rating-btn" onclick="setRating('intake',1)">1</button>
+          <button class="rating-btn" onclick="setRating('intake',2)">2</button>
+          <button class="rating-btn" onclick="setRating('intake',3)">3</button>
+          <button class="rating-btn" onclick="setRating('intake',4)">4</button>
+          <button class="rating-btn" onclick="setRating('intake',5)">5</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="card">
+      <div class="card-title">📝 Match Notes</div>
+      <div class="field">
+        <label>Observations / Penalties / Notable Events</label>
+        <textarea id="m_notes" placeholder="Observations, penalties, notable events... (if you timed BPS, record it here e.g. '~3 BPS')"></textarea>
+      </div>
+    </div>
+
+    <!-- Saved Matches (Edit) -->
+    <div class="card" id="savedMatchesCard" style="border:2px solid var(--gold);background:rgba(232,160,32,0.06)">
+      <div class="card-title" style="font-size:0.95rem;color:var(--gold);letter-spacing:0.08em">
+        ✏️ EDIT SAVED MATCHES
+        <span style="margin-left:8px;font-size:0.7rem;font-weight:400;color:var(--text-dim);text-transform:none;letter-spacing:0">— tap any row below to load it back into the form</span>
+      </div>
+      <div id="savedMatchesList"><div style="color:var(--text-dim);font-size:0.85rem;padding:6px 0">No matches saved yet.</div></div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;padding-top:4px;">
+      <button class="btn btn-ghost" onclick="resetMatchForm()">↺ Reset</button>
+      <button class="btn btn-primary" id="submitMatchBtn" onclick="submitMatch()">💾 Save Match Entry</button>
+    </div>
+  </div>
+
+  <!-- ==================== PIT SCOUTING ==================== -->
+  <div class="page" id="page-pit">
+    <div class="section-header">
+      <div class="section-title">🔧 Pit Scouting</div>
+      <button class="btn btn-ghost" onclick="resetPitForm()">&#x21BA; Clear</button>
+    </div>
+    <p class="section-desc">Interview the team in their pit. The goal is to capture details you cannot see from the stands — be curious and thorough.</p>
+
+    <!-- Identity -->
+    <div class="card">
+      <div class="card-title">Scouter &amp; Team</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Scouter Name <span class="req">*</span></label>
+          <input type="text" id="p_scoutName" placeholder="Your name" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Team Number <span class="req">*</span></label>
+          <input type="number" id="p_teamNum" placeholder="e.g. 1234" min="1">
+        </div>
+        <div class="field span-2">
+          <label>Team Name <span class="req">*</span></label>
+          <input type="text" id="p_teamName" placeholder="Official team name">
+        </div>
+      </div>
+    </div>
+
+    <!-- Intake -->
+    <div class="card">
+      <div class="card-title">Intake System</div>
+      <div class="form-grid cols-1">
+        <div class="field">
+          <label>Where can the robot intake from? <span class="req">*</span></label>
+          <div class="btn-group">
+            <div class="btn-option"><input type="radio" name="p_intakeLoc" id="il_ground" value="Ground"><label for="il_ground">&#x26F0; Ground</label></div>
+            <div class="btn-option"><input type="radio" name="p_intakeLoc" id="il_source" value="Source"><label for="il_source">&#x1F4E6; Source</label></div>
+            <div class="btn-option"><input type="radio" name="p_intakeLoc" id="il_both" value="Both"><label for="il_both">&#x2195; Both</label></div>
+            <div class="btn-option"><input type="radio" name="p_intakeLoc" id="il_other" value="Other"><label for="il_other">&#x2026; Other</label></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Describe the intake mechanism <span class="req">*</span></label>
+          <textarea id="p_intakeType" placeholder="e.g. Slapdown over bumper, through-the-bumper rollers, roller claw... How does it work? How reliable is it?" style="min-height:70px"></textarea>
+        </div>
+        <div class="field">
+          <label>Describe the indexer / ball path <span class="req">*</span></label>
+          <textarea id="p_indexerType" placeholder="e.g. Spindexer, floor rollers, agitator, conveyor belt... How many balls can it hold at once?" style="min-height:70px"></textarea>
+        </div>
+        <div class="field">
+          <label>Max Ball Capacity</label>
+          <input type="number" id="p_ballCap" placeholder="Total balls robot can hold" min="0">
+        </div>
+      </div>
+    </div>
+
+    <!-- Shooter -->
+    <div class="card">
+      <div class="card-title">Shooter System</div>
+      <div class="form-grid cols-1">
+        <div class="field">
+          <label>Describe the shooter mechanism <span class="req">*</span></label>
+          <textarea id="p_shooterType" placeholder="e.g. Double hooded flywheel, turret, on-the-fly, fixed angle... Can it adjust RPM? Does it have a hood adjustment?" style="min-height:70px"></textarea>
+        </div>
+        <div class="field">
+          <label>Preferred shooting position or distance</label>
+          <textarea id="p_shootPos" placeholder="e.g. Tarmac line, launchpad, anywhere on field... Does the robot have a preferred spot? Does it need line-of-sight?" style="min-height:60px"></textarea>
+        </div>
+        <div class="field">
+          <label>Approx. BPS &mdash; Balls Per Second <span class="req">*</span></label>
+          <input type="number" id="p_bps" placeholder="e.g. 3.0" step="0.1" min="0">
+        </div>
+      </div>
+    </div>
+
+    <!-- Auto -->
+    <div class="card">
+      <div class="card-title">Autonomous Capabilities</div>
+      <div class="form-grid cols-1">
+        <div class="field">
+          <label>What does the robot do in Auto? <span class="req">*</span></label>
+          <textarea id="p_autoDesc" placeholder="e.g. 2-ball auto from tarmac, taxi only, 5-ball auto... How consistent is it? Does it have multiple paths?" style="min-height:80px"></textarea>
+        </div>
+        <div class="field">
+          <label>How reliable is the auto routine?</label>
+          <div class="btn-group">
+            <div class="btn-option"><input type="radio" name="p_autoRel" id="ar_always" value="Always works"><label for="ar_always">&#x2705; Always</label></div>
+            <div class="btn-option"><input type="radio" name="p_autoRel" id="ar_usually" value="Usually works"><label for="ar_usually">&#x1F44D; Usually</label></div>
+            <div class="btn-option"><input type="radio" name="p_autoRel" id="ar_sometimes" value="Sometimes"><label for="ar_sometimes">&#x26A0;&#xFE0F; Sometimes</label></div>
+            <div class="btn-option"><input type="radio" name="p_autoRel" id="ar_none" value="No auto"><label for="ar_none">&#x2717; No Auto</label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Climb -->
+    <div class="card">
+      <div class="card-title">Climb &amp; Endgame</div>
+      <div class="form-grid cols-1">
+        <div class="field">
+          <label>Max achievable climb level <span class="req">*</span></label>
+          <div class="btn-group">
+            <div class="btn-option"><input type="radio" name="p_climb" id="pc_l1" value="Level 1"><label for="pc_l1">&#x1F535; Lvl 1</label></div>
+            <div class="btn-option"><input type="radio" name="p_climb" id="pc_l2" value="Level 2"><label for="pc_l2">&#x1F7E1; Lvl 2</label></div>
+            <div class="btn-option"><input type="radio" name="p_climb" id="pc_l3" value="Level 3"><label for="pc_l3">&#x1F534; Lvl 3</label></div>
+            <div class="btn-option"><input type="radio" name="p_climb" id="pc_none" value="Cannot Climb"><label for="pc_none">&#x2717; Cannot Climb</label></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Describe the climb mechanism</label>
+          <textarea id="p_climbDesc" placeholder="e.g. Telescoping arms, hooks, winch, traversal capable... How long does it take? Is it consistent?" style="min-height:70px"></textarea>
+        </div>
+        <div class="field">
+          <label>Can the robot traverse the field?</label>
+          <div class="btn-group">
+            <div class="btn-option"><input type="radio" name="p_traverse" id="tr_trench" value="Trench"><label for="tr_trench">Under Trench</label></div>
+            <div class="btn-option"><input type="radio" name="p_traverse" id="tr_bump" value="Bump"><label for="tr_bump">Over Bump</label></div>
+            <div class="btn-option"><input type="radio" name="p_traverse" id="tr_both" value="Both"><label for="tr_both">Both</label></div>
+            <div class="btn-option"><input type="radio" name="p_traverse" id="tr_none" value="Cannot"><label for="tr_none">Cannot</label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strategy -->
+    <div class="card">
+      <div class="card-title">Strategy &amp; Role</div>
+      <div class="form-grid cols-1">
+        <div class="field">
+          <label>What role does the team prefer to play?</label>
+          <div class="btn-group">
+            <div class="btn-option"><input type="radio" name="p_role" id="pr_off" value="Offense"><label for="pr_off">&#x2694;&#xFE0F; Offense</label></div>
+            <div class="btn-option"><input type="radio" name="p_role" id="pr_def" value="Defense"><label for="pr_def">&#x1F6E1;&#xFE0F; Defense</label></div>
+            <div class="btn-option"><input type="radio" name="p_role" id="pr_flex" value="Flexible"><label for="pr_flex">&#x2696;&#xFE0F; Flexible</label></div>
+            <div class="btn-option"><input type="radio" name="p_role" id="pr_climb" value="Climb Specialist"><label for="pr_climb">&#x1F9D7; Climb Specialist</label></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Can the robot play defense effectively?</label>
+          <div class="btn-group">
+            <div class="btn-option"><input type="radio" name="p_defense" id="pd_yes" value="Yes"><label for="pd_yes">&#x2705; Yes</label></div>
+            <div class="btn-option"><input type="radio" name="p_defense" id="pd_limited" value="Limited"><label for="pd_limited">&#x26A0;&#xFE0F; Limited</label></div>
+            <div class="btn-option"><input type="radio" name="p_defense" id="pd_no" value="No"><label for="pd_no">&#x2717; No</label></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>What alliance strategy would best use this robot?</label>
+          <textarea id="p_strategy" placeholder="e.g. Strong 2-ball auto partner, reliable Lvl 3 climb, consistent fuel scorer... What would make them a great alliance pick?" style="min-height:70px"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Open-ended -->
+    <div class="card">
+      <div class="card-title">Open-Ended Interview</div>
+      <div class="form-grid cols-1">
+        <div class="field">
+          <label>What is the robot's greatest strength? <span class="req">*</span></label>
+          <textarea id="p_strength" placeholder="Ask the team directly - what are they most proud of or most confident about on this robot?"></textarea>
+        </div>
+        <div class="field">
+          <label>What has been the biggest challenge or weakness? <span class="req">*</span></label>
+          <textarea id="p_trouble" placeholder="Mechanical issues, programming bugs, consistency problems, things still being worked on..."></textarea>
+        </div>
+        <div class="field">
+          <label>What improvements have been made since bag day or last event?</label>
+          <textarea id="p_improvements" placeholder="Upgrades, fixes, tuning changes since the robot was first built..."></textarea>
+        </div>
+        <div class="field">
+          <label>Any additional notes or unique features?</label>
+          <textarea id="p_notes" placeholder="Special mechanisms, unusual design choices, things that stood out during the pit visit, team comments..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved Pit Entries -->
+    <div class="card" id="savedPitsCard" style="border:2px solid var(--gold);background:rgba(232,160,32,0.06)">
+      <div class="card-title" style="font-size:0.95rem;color:var(--gold);letter-spacing:0.08em">
+        ✏️ EDIT SAVED PIT ENTRIES
+        <span style="margin-left:8px;font-size:0.7rem;font-weight:400;color:var(--text-dim);text-transform:none;letter-spacing:0">— tap any row below to load it back into the form</span>
+      </div>
+      <div id="savedPitsList"><div style="color:var(--text-dim);font-size:0.85rem;padding:6px 0">No pit entries saved yet.</div></div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;padding-top:4px;">
+      <button class="btn btn-ghost" onclick="resetPitForm()">&#x21BA; Reset</button>
+      <button class="btn btn-primary" id="submitPitBtn" onclick="submitPit()">&#x1F4BE; Save Pit Entry</button>
+    </div>
+  </div>
+
+  <!-- ==================== TEAMS DASHBOARD ==================== -->
+  <div class="page" id="page-teams">
+    <div class="section-header">
+      <div class="section-title">Team Dashboard</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="showView('list')" id="vbtn-list">☰ List</button>
+        <button class="btn btn-ghost" onclick="showView('table')" id="vbtn-table">⊞ Table</button>
+      </div>
+    </div>
+
+    <div class="stat-grid" id="globalStats"></div>
+
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="teamSearch" placeholder="Search team number or name..." oninput="renderTeams()">
+    </div>
+
+    <div id="teamsListView">
+      <div id="teamsList" class="match-list"></div>
+    </div>
+
+    <div id="teamsTableView" style="display:none">
+      <div class="team-table-wrap">
+        <table id="teamsTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable('teamNum')" class="sorted"># <span class="sort-arrow">↑</span></th>
+              <th onclick="sortTable('teamName')">Team</th>
+              <th onclick="sortTable('matches')">Matches</th>
+              <th onclick="sortTable('avgPoints')">Avg Pts</th>
+              <th onclick="sortTable('totalRP')">Total RP</th>
+              <th onclick="sortTable('bps')">BPS</th>
+              <th onclick="sortTable('climbMax')">Climb</th>
+              <th onclick="sortTable('role')">Role</th>
+            </tr>
+          </thead>
+          <tbody id="teamsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TEAM DETAIL -->
+    <div id="teamDetailView" style="display:none">
+      <button class="btn btn-ghost" onclick="closeTeamDetail()" style="margin-bottom:16px">← Back to Teams</button>
+      <div id="teamDetailContent"></div>
+    </div>
+  </div>
+
+  <!-- ==================== EXPORT ==================== -->
+  <div class="page" id="page-export">
+    <div class="section-header">
+      <div class="section-title">Export & Sync</div>
+    </div>
+
+    <div class="stat-grid" id="exportStats"></div>
+
+    <div class="card">
+      <div class="card-title">📋 Google Sheets Export</div>
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:16px;line-height:1.6">
+        Export match and pit data as CSV files. Import into Google Sheets: <strong>File → Import → Upload</strong>.
+        Data includes all teams sorted by number.
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-export" onclick="exportCSV('match')">⬇ Match Data CSV</button>
+        <button class="btn btn-export" onclick="exportCSV('pit')">⬇ Pit Data CSV</button>
+        <button class="btn btn-export" onclick="exportCSV('combined')">⬇ Combined CSV</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔄 Multi-Device Sync</div>
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:16px;line-height:1.6">
+        Share data between devices by exporting a JSON backup and importing it on another device. Works completely offline.
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn btn-success" onclick="exportJSON()">⬆ Export Backup (JSON)</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">⬇ Import Backup</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📱 Add to Home Screen</div>
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:16px;line-height:1.6">
+        Install this app on your phone for quick access during competition:<br>
+        <strong>iPhone/iPad:</strong> Safari → Share → Add to Home Screen<br>
+        <strong>Android:</strong> Chrome → Menu → Add to Home Screen
+      </p>
+      <div class="highlight-row">
+        <div style="font-size:0.8rem;color:var(--accent);font-weight:700;letter-spacing:0.05em">✓ WORKS OFFLINE</div>
+        <div style="font-size:0.75rem;color:var(--text-dim);margin-top:3px">All data is stored locally in your browser. No internet required after first load.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🗑️ Danger Zone</div>
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:16px;line-height:1.6">
+        Permanently delete all scouting data. Cannot be undone.
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Bottom Nav (mobile) -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bottom-nav-btn active" onclick="switchPage('match')" data-page="match">
+    <span class="bn-icon">🤖</span>Match
+  </button>
+  <button class="bottom-nav-btn" onclick="switchPage('pit')" data-page="pit">
+    <span class="bn-icon">🔧</span>Pit
+  </button>
+  <button class="bottom-nav-btn" onclick="switchPage('teams')" data-page="teams">
+    <span class="bn-icon">📊</span>Teams
+  </button>
+  <button class="bottom-nav-btn" onclick="switchPage('export')" data-page="export">
+    <span class="bn-icon">💾</span>Export
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== DATA STORE ====================
+const STORAGE_KEY = 'frc_scout_humber2026';
+
+function loadData() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"matches":[],"pits":[]}');
+  } catch { return { matches: [], pits: [] }; }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  updateHeaderCount();
+}
+
+function updateHeaderCount() {
+  const d = loadData();
+  // mascots removed
+
+  document.getElementById('dataCount').textContent = `${d.matches.length + d.pits.length} ENTRIES`;
+}
+
+// ==================== COUNTERS ====================
+const counters = { autoFuelActive: 0, teleFuelActive: 0 };
+const ratings = { climb: 0, scoring: 0, intake: 0 };
+
+function adjustCounter(key, delta) {
+  counters[key] = Math.max(0, counters[key] + delta);
+  const el = document.getElementById('val_' + key);
+  if (el) { el.tagName === 'INPUT' ? (el.value = counters[key]) : (el.textContent = counters[key]); }
+}
+
+function setRating(key, val) {
+  ratings[key] = val;
+  const group = document.getElementById('rating_' + key);
+  const btns = group.querySelectorAll('.rating-btn');
+  btns.forEach(btn => btn.className = 'rating-btn');
+  if (val === 0) {
+    // N/A is first button (index 0)
+    btns[0].classList.add('active-na');
+  } else {
+    // buttons 1-5 are indices 1-5; highlight up to val
+    btns.forEach((btn, i) => {
+      if (i >= 1 && i <= val) btn.classList.add('active-' + val);
+    });
+  }
+}
+
+function calcScores() {
+  const autoClimbEl = document.getElementById('m_autoClimb');
+  const teleClimbEl = document.getElementById('m_climb');
+  const autoClimb = autoClimbEl ? Math.max(0, parseInt(autoClimbEl.value) || 0) : 0;
+  const teleClimb = teleClimbEl ? Math.max(0, parseInt(teleClimbEl.value) || 0) : 0;
+  const auto  = counters.autoFuelActive + autoClimb;
+  const tele  = counters.teleFuelActive + teleClimb;
+  const total = auto + tele;
+  const upd = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  upd('autoScore',  auto);
+  upd('scoreAuto',  auto);
+  upd('scoreTele',  tele);
+  upd('scoreTotal', total);
+
+  // Push this robot's contributions into alliance fields as a baseline
+  // Only auto-fill if the field hasn't been manually overridden
+  const climbEl = document.getElementById('m_allianceClimbPts');
+  const fuelEl  = document.getElementById('m_allianceFuelPts');
+  const thisClimb = autoClimb + teleClimb;
+  const thisFuel  = counters.autoFuelActive + counters.teleFuelActive;
+  if (climbEl && !climbEl.dataset.manual) climbEl.value = thisClimb || '';
+  if (fuelEl  && !fuelEl.dataset.manual)  fuelEl.value  = thisFuel  || '';
+
+  updateRPPreview();
+}
+
+
+function getRadio(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '';
+}
+
+// ==================== RP LIVE PREVIEW ====================
+function updateRPPreview() {
+  const climbPts = parseInt(document.getElementById('m_allianceClimbPts').value) || 0;
+  const fuelPts  = parseInt(document.getElementById('m_allianceFuelPts').value)  || 0;
+  const winRP    = parseInt(getRadio('m_winRP')) || 0;
+
+  const climbRP = climbPts >= 50 ? 1 : 0;
+  const fuelRP  = fuelPts  >= 360 ? 2 : fuelPts >= 100 ? 1 : 0;
+  const total   = climbRP + fuelRP + winRP;
+
+  // Climb hint
+  const climbHint = document.getElementById('climbRP_hint');
+  if (climbPts > 0) {
+    climbHint.textContent = climbPts >= 50
+      ? `✓ ${climbPts} pts — Climb RP earned!`
+      : `✗ ${climbPts} pts — need ${50 - climbPts} more for RP`;
+    climbHint.style.color = climbPts >= 50 ? 'var(--green)' : 'var(--accent2)';
+  } else {
+    climbHint.textContent = 'Enter alliance total to auto-calculate RP';
+    climbHint.style.color = 'var(--text-dim)';
+  }
+
+  // Fuel hint
+  const fuelHint = document.getElementById('fuelRP_hint');
+  if (fuelPts > 0) {
+    if (fuelPts >= 360)      fuelHint.textContent = `✓ ${fuelPts} pts — Both Fuel RPs earned! (+2)`;
+    else if (fuelPts >= 100) fuelHint.textContent = `✓ ${fuelPts} pts — 1 Fuel RP. Need ${360 - fuelPts} more for 2nd RP`;
+    else                      fuelHint.textContent = `✗ ${fuelPts} pts — need ${100 - fuelPts} more for first RP`;
+    fuelHint.style.color = fuelPts >= 100 ? 'var(--green)' : 'var(--accent2)';
+  } else {
+    fuelHint.textContent = '≥100 pts = 1 RP,  ≥360 pts = 2 RP';
+    fuelHint.style.color = 'var(--text-dim)';
+  }
+
+  // Badge states
+  const set = (id, on, cls) => {
+    const el = document.getElementById(id);
+    el.style.opacity = on ? '1' : '0.3';
+    el.className = 'badge ' + (on ? cls : '');
+  };
+  set('rp_climb_badge', climbRP,       'badge-green');
+  set('rp_fuel1_badge', fuelRP >= 1,   'badge-blue');
+  set('rp_fuel2_badge', fuelRP >= 2,   'badge-purple');
+  set('rp_win_badge',   winRP >= 3,    'badge-gold');
+
+  document.getElementById('rp_total').textContent = total;
+  document.getElementById('rp_total').style.color =
+    total >= 4 ? 'var(--green)' : total >= 2 ? 'var(--gold)' : 'var(--text-bright)';
+}
+
+// ==================== MATCH EDITING ====================
+let editingMatchId = null;
+
+function renderSavedMatches() {
+  const data = loadData();
+  const el = document.getElementById('savedMatchesList');
+  if (!el) return;
+  if (!data.matches.length) {
+    el.innerHTML = '<div style="color:var(--text-dim);font-size:0.8rem;padding:4px 0">No matches saved yet.</div>';
+    return;
+  }
+  const sorted = [...data.matches].sort((a,b) => a.matchNum - b.matchNum || a.teamNum - b.teamNum);
+  el.innerHTML = sorted.map(m => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border:1px solid ${editingMatchId===m.id?'var(--accent)':'var(--border)'};border-radius:5px;margin-bottom:6px;background:${editingMatchId===m.id?'var(--accent-dim)':'var(--bg)'};cursor:pointer;flex-wrap:wrap;gap:6px"
+         onclick="loadMatchForEdit(${m.id})">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-family:'Orbitron',monospace;font-size:0.75rem;color:var(--accent)">M${m.matchNum}</span>
+        <span style="font-weight:700;color:var(--text-bright)">Team ${m.teamNum}</span>
+        ${m.teamName ? `<span style="color:var(--text-dim);font-size:0.8rem">${m.teamName}</span>` : ''}
+        <span class="badge badge-gold">${m.totalPoints||0} pts</span>
+        <span class="badge ${m.winRP>=3?'badge-green':m.winRP>=1?'badge-gold':'badge-orange'}">${m.winRP>=3?'Win':m.winRP>=1?'Tie':'Loss'}</span>
+        ${m.climbRP ? `<span class="badge badge-purple">Traversal +${m.climbRP}</span>` : ''}
+        ${m.fuelRP>=2 ? `<span class="badge badge-blue">Supercharged +2</span>` : m.fuelRP===1 ? `<span class="badge badge-blue">Energized +1</span>` : ''}
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="text-align:right">
+          <div style="font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;color:var(--gold)">${m.totalRP||0} <span style="font-size:0.6rem;color:var(--text-dim);font-weight:400">RP</span></div>
+        </div>
+        ${editingMatchId===m.id ? '<span style="font-size:0.7rem;color:var(--gold);font-weight:700">EDITING</span>' : ''}
+        <button onclick="event.stopPropagation();deleteMatch(${m.id})" style="padding:4px 8px;border-radius:4px;border:1px solid var(--red);background:transparent;color:var(--red);font-size:0.7rem;cursor:pointer;font-family:inherit;font-weight:700">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadMatchForEdit(id) {
+  const data = loadData();
+  const m = data.matches.find(x => x.id === id);
+  if (!m) return;
+  editingMatchId = id;
+
+  // Populate identity
+  document.getElementById('m_scoutName').value = m.scoutName || '';
+  document.getElementById('m_matchNum').value = m.matchNum || '';
+  document.getElementById('m_teamNum').value = m.teamNum || '';
+  document.getElementById('m_teamName').value = m.teamName || '';
+
+  // Alliance & auto
+  ['m_alliance','m_role','m_winRP'].forEach(name => {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+      r.checked = (r.value === String(m[{m_alliance:'alliance',m_role:'role',m_winRP:'winRP'}[name]]));
+    });
+  });
+
+  // Counters
+  const cmap = { autoFuelActive: m.autoFuelActive||0,
+                 teleFuelActive: m.teleFuelActive||0 };
+  Object.entries(cmap).forEach(([k,v]) => {
+    counters[k] = v;
+    const el = document.getElementById('val_'+k);
+    if (el) { el.tagName === 'INPUT' ? (el.value = v) : (el.textContent = v); }
+  });
+
+  // Selects
+  document.getElementById('m_autoClimb').value = String(m.autoClimbPts||0);
+  // Find climb select value matching climbPts
+  const climbSel = document.getElementById('m_climb');
+  const climbVal = m.climbPts > 0 ? String(m.climbPts) : (m.climbResult && m.climbResult.includes('Failed') ? '-1' : '0');
+  climbSel.value = climbVal;
+
+  // alliance pts, notes — mark as manual so calcScores doesn't overwrite saved values
+  const acEl = document.getElementById('m_allianceClimbPts');
+  const afEl = document.getElementById('m_allianceFuelPts');
+  acEl.value = m.allianceClimbPts || ''; acEl.dataset.manual = '1';
+  afEl.value = m.allianceFuelPts || ''; afEl.dataset.manual = '1';
+  document.getElementById('m_notes').value = m.notes || '';
+
+  // Ratings
+  ['climb','scoring','intake'].forEach(k => {
+    const val = m['rating'+k.charAt(0).toUpperCase()+k.slice(1)] || 0;
+    setRating(k, val);
+  });
+
+  calcScores();
+  updateRPPreview();
+  renderSavedMatches();
+
+  // Update button label
+  document.getElementById('submitMatchBtn').textContent = '💾 Update Match Entry';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast(`Loaded Match ${m.matchNum} — Team ${m.teamNum} for editing`, '');
+}
+
+function deleteMatch(id) {
+  if (!confirm('Delete this match entry?')) return;
+  const data = loadData();
+  data.matches = data.matches.filter(m => m.id !== id);
+  saveData(data);
+  if (editingMatchId === id) { editingMatchId = null; resetMatchForm(); }
+  renderSavedMatches();
+  renderTeams();
+  showToast('Match deleted', 'error');
+}
+
+// ==================== MATCH SUBMIT ====================
+function submitMatch() {
+  const scoutName = document.getElementById('m_scoutName').value.trim();
+  const matchNum = document.getElementById('m_matchNum').value.trim();
+  const teamNum = document.getElementById('m_teamNum').value.trim();
+
+  if (!scoutName || !matchNum || !teamNum) {
+    showToast('Fill in Scout Name, Match #, and Team # to continue', 'error');
+    return;
+  }
+
+  const entry = {
+    id: Date.now(),
+    type: 'match',
+    timestamp: new Date().toISOString(),
+    scoutName,
+    matchNum: parseInt(matchNum),
+    teamNum: parseInt(teamNum),
+    teamName: document.getElementById('m_teamName').value.trim(),
+    alliance: getRadio('m_alliance'),
+    autoFuelActive: counters.autoFuelActive,
+    autoFuelInactive: 0,
+    autoClimbPts: parseInt(document.getElementById('m_autoClimb').value) || 0,
+    teleFuelActive: counters.teleFuelActive,
+    teleFuelInactive: 0,
+    climbPts: Math.max(0, parseInt(document.getElementById('m_climb').value) || 0),
+    climbResult: document.getElementById('m_climb').options[document.getElementById('m_climb').selectedIndex].text,
+    bps: 0,
+    role: getRadio('m_role'),
+    allianceClimbPts: parseInt(document.getElementById('m_allianceClimbPts').value) || 0,
+    allianceFuelPts: parseInt(document.getElementById('m_allianceFuelPts').value) || 0,
+    winRP: parseInt(getRadio('m_winRP')) || 0,
+    ratingClimb: ratings.climb,
+    ratingScoring: ratings.scoring,
+    ratingIntake: ratings.intake,
+    notes: document.getElementById('m_notes').value.trim()
+  };
+
+  // Calculate match points from scoring
+  entry.autoPoints = entry.autoFuelActive * 1 + entry.autoClimbPts;
+  entry.telePoints = entry.teleFuelActive * 1 + entry.climbPts;
+  entry.totalPoints = entry.autoPoints + entry.telePoints;
+
+  // Calculate RP from thresholds
+  entry.climbRP  = entry.allianceClimbPts >= 50 ? 1 : 0;
+  entry.fuelRP   = entry.allianceFuelPts >= 360 ? 2 : entry.allianceFuelPts >= 100 ? 1 : 0;
+  entry.totalRP  = entry.climbRP + entry.fuelRP + entry.winRP;
+
+  const data = loadData();
+
+  if (editingMatchId) {
+    // Update existing entry, preserve original id & timestamp
+    const idx = data.matches.findIndex(m => m.id === editingMatchId);
+    if (idx >= 0) {
+      entry.id = editingMatchId;
+      entry.timestamp = data.matches[idx].timestamp;
+      data.matches[idx] = entry;
+      saveData(data);
+      showToast(`✓ Match ${entry.matchNum} updated for Team ${entry.teamNum}`, 'success');
+    }
+    editingMatchId = null;
+    document.getElementById('submitMatchBtn').textContent = '💾 Save Match Entry';
+  } else {
+    data.matches.push(entry);
+    saveData(data);
+    showToast(`✓ Match ${entry.matchNum} saved for Team ${entry.teamNum}`, 'success');
+  }
+
+  renderSavedMatches();
+  renderTeams();
+  resetMatchForm();
+}
+
+function resetMatchForm() {
+  ['m_scoutName','m_matchNum','m_teamNum','m_teamName',
+   'm_allianceClimbPts','m_allianceFuelPts','m_notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; delete el.dataset.manual; }
+  });
+  ['m_alliance','m_role','m_winRP'].forEach(name => {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = false);
+  });
+  Object.keys(counters).forEach(k => {
+    counters[k] = 0;
+    const el = document.getElementById('val_'+k);
+    if (el) { el.tagName === 'INPUT' ? (el.value = 0) : (el.textContent = 0); }
+  });
+  Object.keys(ratings).forEach(k => { ratings[k] = 0; });
+  ['climb','scoring','intake'].forEach(k => setRating(k, 0));
+  document.getElementById('m_climb').value = '0';
+  document.getElementById('m_autoClimb').value = '0';
+  editingMatchId = null;
+  const btn = document.getElementById('submitMatchBtn');
+  if (btn) btn.textContent = '💾 Save Match Entry';
+  calcScores();
+  updateRPPreview();
+  renderSavedMatches();
+}
+
+// ==================== PIT SUBMIT ====================
+// ==================== PIT EDITING ====================
+let editingPitId = null;
+
+function renderSavedPits() {
+  const data = loadData();
+  const el = document.getElementById('savedPitsList');
+  if (!el) return;
+  if (!data.pits.length) {
+    el.innerHTML = '<div style="color:var(--text-dim);font-size:0.8rem;padding:4px 0">No pit entries saved yet.</div>';
+    return;
+  }
+  const sorted = [...data.pits].sort((a,b) => a.teamNum - b.teamNum);
+  el.innerHTML = sorted.map(p => {
+    const editing = editingPitId === p.id;
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border:1px solid ${editing?'var(--gold)':'var(--border)'};border-radius:5px;margin-bottom:6px;background:${editing?'var(--accent-dim)':'var(--bg)'};cursor:pointer;flex-wrap:wrap;gap:6px" onclick="loadPitForEdit(${p.id})">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-family:'Orbitron',monospace;font-size:0.75rem;color:var(--gold)">Team ${p.teamNum}</span>
+        ${p.teamName ? `<span style="font-weight:700;color:var(--text-bright)">${p.teamName}</span>` : ''}
+        ${p.climbLevel ? `<span class="badge badge-purple">${p.climbLevel}</span>` : ''}
+        ${p.intakeLoc ? `<span class="badge badge-blue">${p.intakeLoc}</span>` : ''}
+        ${p.autoRel ? `<span class="badge badge-green">${p.autoRel}</span>` : ''}
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        ${editing ? '<span style="font-size:0.7rem;color:var(--gold);font-weight:700">EDITING</span>' : ''}
+        <button onclick="event.stopPropagation();deletePit(${p.id})" style="padding:4px 8px;border-radius:4px;border:1px solid var(--red);background:transparent;color:var(--red);font-size:0.7rem;cursor:pointer;font-family:inherit;font-weight:700">x</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadPitForEdit(id) {
+  const data = loadData();
+  const p = data.pits.find(x => x.id === id);
+  if (!p) return;
+  editingPitId = id;
+  const fmap = {
+    p_scoutName: p.scoutName, p_teamNum: p.teamNum, p_teamName: p.teamName,
+    p_intakeType: p.intakeType, p_indexerType: p.indexerType, p_ballCap: p.ballCap,
+    p_bps: p.bps, p_strength: p.strength, p_trouble: p.trouble, p_notes: p.notes,
+    p_shooterType: p.shooterType, p_shootPos: p.shootPos, p_autoDesc: p.autoDesc,
+    p_climbDesc: p.climbDesc, p_strategy: p.strategy, p_improvements: p.improvements
+  };
+  Object.entries(fmap).forEach(([fid, val]) => {
+    const el = document.getElementById(fid);
+    if (el) el.value = val || '';
+  });
+  const rmap = { p_intakeLoc: p.intakeLoc, p_climb: p.climbLevel, p_traverse: p.traverse,
+                 p_autoRel: p.autoRel, p_role: p.pitRole, p_defense: p.defense };
+  Object.entries(rmap).forEach(([name, val]) => {
+    document.querySelectorAll('input[name="' + name + '"]').forEach(r => { r.checked = (r.value === val); });
+  });
+  renderSavedPits();
+  const btn = document.getElementById('submitPitBtn');
+  if (btn) btn.textContent = 'Update Pit Entry';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('Loaded pit entry for Team ' + p.teamNum, '');
+}
+
+function deletePit(id) {
+  if (!confirm('Delete this pit entry?')) return;
+  const data = loadData();
+  data.pits = data.pits.filter(p => p.id !== id);
+  saveData(data);
+  if (editingPitId === id) { editingPitId = null; resetPitForm(); }
+  renderSavedPits();
+  renderTeams();
+  showToast('Pit entry deleted', 'error');
+}
+
+function submitPit() {
+  const scoutName = document.getElementById('p_scoutName').value.trim();
+  const teamNum   = document.getElementById('p_teamNum').value.trim();
+  const teamName  = document.getElementById('p_teamName').value.trim();
+  if (!scoutName || !teamNum || !teamName) {
+    showToast('Fill in Scouter Name, Team Number, and Team Name', 'error');
+    return;
+  }
+  const entry = {
+    id: editingPitId || Date.now(),
+    type: 'pit',
+    timestamp: new Date().toISOString(),
+    scoutName, teamNum: parseInt(teamNum), teamName,
+    intakeLoc:    getRadio('p_intakeLoc'),
+    intakeType:   document.getElementById('p_intakeType').value.trim(),
+    indexerType:  document.getElementById('p_indexerType').value.trim(),
+    ballCap:      parseInt(document.getElementById('p_ballCap').value) || 0,
+    shooterType:  document.getElementById('p_shooterType').value.trim(),
+    shootPos:     document.getElementById('p_shootPos').value.trim(),
+    bps:          parseFloat(document.getElementById('p_bps').value) || 0,
+    autoDesc:     document.getElementById('p_autoDesc').value.trim(),
+    autoRel:      getRadio('p_autoRel'),
+    climbLevel:   getRadio('p_climb'),
+    climbDesc:    document.getElementById('p_climbDesc').value.trim(),
+    traverse:     getRadio('p_traverse'),
+    pitRole:      getRadio('p_role'),
+    defense:      getRadio('p_defense'),
+    strategy:     document.getElementById('p_strategy').value.trim(),
+    strength:     document.getElementById('p_strength').value.trim(),
+    trouble:      document.getElementById('p_trouble').value.trim(),
+    improvements: document.getElementById('p_improvements').value.trim(),
+    notes:        document.getElementById('p_notes').value.trim()
+  };
+  const data = loadData();
+  if (editingPitId) {
+    const idx = data.pits.findIndex(p => p.id === editingPitId);
+    if (idx >= 0) { entry.timestamp = data.pits[idx].timestamp; data.pits[idx] = entry; }
+    editingPitId = null;
+    const btn = document.getElementById('submitPitBtn');
+    if (btn) btn.textContent = 'Save Pit Entry';
+    showToast('Pit entry updated for Team ' + teamNum, 'success');
+  } else {
+    data.pits.push(entry);
+    showToast('Pit entry saved for Team ' + teamNum, 'success');
+  }
+  saveData(data);
+  renderSavedPits();
+  renderTeams();
+  resetPitForm();
+}
+
+function resetPitForm() {
+  ['p_scoutName','p_teamNum','p_teamName','p_intakeType','p_indexerType','p_ballCap',
+   'p_shooterType','p_shootPos','p_bps','p_autoDesc','p_climbDesc',
+   'p_strategy','p_strength','p_trouble','p_improvements','p_notes'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  ['p_intakeLoc','p_climb','p_traverse','p_autoRel','p_role','p_defense'].forEach(name => {
+    document.querySelectorAll('input[name="' + name + '"]').forEach(r => r.checked = false);
+  });
+  editingPitId = null;
+  const btn = document.getElementById('submitPitBtn');
+  if (btn) btn.textContent = 'Save Pit Entry';
+  renderSavedPits();
+}
+
+// ==================== TEAMS VIEW ====================
+let currentSort = 'teamNum';
+let sortAsc = true;
+let currentView = 'list';
+
+function showView(v) {
+  currentView = v;
+  document.getElementById('teamsListView').style.display = v === 'list' ? '' : 'none';
+  document.getElementById('teamsTableView').style.display = v === 'table' ? '' : 'none';
+  document.getElementById('teamDetailView').style.display = 'none';
+  document.getElementById('vbtn-list').className = 'btn ' + (v==='list' ? 'btn-primary' : 'btn-ghost');
+  document.getElementById('vbtn-table').className = 'btn ' + (v==='table' ? 'btn-primary' : 'btn-ghost');
+  renderTeams();
+}
+
+function getTeamStats() {
+  const data = loadData();
+  const teams = {};
+
+  data.matches.forEach(m => {
+    const k = m.teamNum;
+    if (!teams[k]) teams[k] = { teamNum: k, teamName: m.teamName || '', matches: [], pits: [], totalRP: 0 };
+    if (m.teamName && !teams[k].teamName) teams[k].teamName = m.teamName;
+    teams[k].matches.push(m);
+    teams[k].totalRP += m.totalRP || 0;
+  });
+
+  data.pits.forEach(p => {
+    const k = p.teamNum;
+    if (!teams[k]) teams[k] = { teamNum: k, teamName: p.teamName || '', matches: [], pits: [], totalRP: 0 };
+    if (p.teamName) teams[k].teamName = p.teamName;
+    teams[k].pits.push(p);
+  });
+
+  Object.values(teams).forEach(t => {
+    const ms = t.matches;
+    t.matchCount = ms.length;
+    t.avgPoints = ms.length ? Math.round(ms.reduce((s,m)=>s+m.totalPoints,0)/ms.length) : 0;
+    t.avgBps = ms.length ? (ms.reduce((s,m)=>s+m.bps,0)/ms.length).toFixed(1) : (t.pits[0]?.bps || 0);
+    t.climbMax = getMaxClimb(ms);
+    t.role = getMostCommonRole(ms);
+    t.hasPit = t.pits.length > 0;
+    t.avgRatingClimb = ms.length ? (ms.reduce((s,m)=>s+(m.ratingClimb||0),0)/ms.length).toFixed(1) : '—';
+    t.avgRatingScoring = ms.length ? (ms.reduce((s,m)=>s+(m.ratingScoring||0),0)/ms.length).toFixed(1) : '—';
+    t.avgRatingIntake = ms.length ? (ms.reduce((s,m)=>s+(m.ratingIntake||0),0)/ms.length).toFixed(1) : '—';
+  });
+
+  return Object.values(teams);
+}
+
+function getMaxClimb(matches) {
+  const order = ['Level 3', 'Level 2', 'Level 1', 'Attempted', 'Did Not Attempt'];
+  for (const lvl of order) {
+    if (matches.some(m => (m.climbResult||'').includes(lvl))) return lvl;
+  }
+  return '—';
+}
+
+function getMostCommonRole(matches) {
+  if (!matches.length) return '—';
+  const counts = {};
+  matches.forEach(m => { if (m.role) counts[m.role] = (counts[m.role]||0) + 1; });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—';
+}
+
+function renderTeams() {
+  const search = document.getElementById('teamSearch').value.toLowerCase();
+  let teams = getTeamStats().filter(t =>
+    String(t.teamNum).includes(search) ||
+    (t.teamName||'').toLowerCase().includes(search)
+  );
+
+  // Global stats
+  renderGlobalStats(teams);
+
+  // Sort
+  teams.sort((a,b) => {
+    let av = a[currentSort], bv = b[currentSort];
+    if (typeof av === 'string') av = av.toLowerCase();
+    if (typeof bv === 'string') bv = bv.toLowerCase();
+    if (av < bv) return sortAsc ? -1 : 1;
+    if (av > bv) return sortAsc ? 1 : -1;
+    return 0;
+  });
+
+  if (currentView === 'list') renderTeamsList(teams);
+  else renderTeamsTable(teams);
+}
+
+function renderGlobalStats(teams) {
+  const data = loadData();
+  const el = document.getElementById('globalStats');
+  const expEl = document.getElementById('exportStats');
+  const html = `
+    <div class="stat-card">
+      <div class="stat-val">${teams.length}</div>
+      <div class="stat-label">Teams</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${data.matches.length}</div>
+      <div class="stat-label">Match Entries</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${data.pits.length}</div>
+      <div class="stat-label">Pit Entries</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${teams.length ? Math.round(teams.reduce((s,t)=>s+t.avgPoints,0)/teams.length) : 0}</div>
+      <div class="stat-label">Avg Points</div>
+    </div>
+  `;
+  if (el) el.innerHTML = html;
+  if (expEl) expEl.innerHTML = html;
+}
+
+function renderTeamsList(teams) {
+  const el = document.getElementById('teamsList');
+  if (!teams.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No scouting data yet.<br>Start with Match or Pit scouting.</div></div>`;
+    return;
+  }
+
+  el.innerHTML = teams.map(t => {
+    const climBadge = t.climbMax === 'Level 3' ? 'badge-purple' : t.climbMax === 'Level 2' ? 'badge-blue' : t.climbMax === 'Level 1' ? 'badge-green' : 'badge-orange';
+    return `
+    <div class="match-item" onclick="openTeamDetail(${t.teamNum})">
+      <div class="match-item-left">
+        <div>
+          <div class="match-team">
+            <span style="font-family:'Orbitron',monospace;color:var(--accent);font-size:0.85rem">${t.teamNum}</span>
+            ${t.teamName ? `<span style="margin-left:8px">${t.teamName}</span>` : ''}
+          </div>
+          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+            <span class="badge badge-blue">${t.matchCount} match${t.matchCount!==1?'es':''}</span>
+            ${t.hasPit ? '<span class="badge badge-green">✓ pit</span>' : '<span class="badge" style="opacity:0.4">no pit</span>'}
+            ${t.avgPoints ? `<span class="badge badge-gold">~${t.avgPoints} pts</span>` : ''}
+            <span class="badge ${climBadge}">${t.climbMax}</span>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'Orbitron',monospace;font-size:1rem;color:var(--text-bright);font-weight:700">${t.totalRP}</div>
+        <div style="font-size:0.65rem;color:var(--text-dim);letter-spacing:0.1em">TOTAL RP</div>
+        ${t.avgBps ? `<div style="font-size:0.7rem;color:var(--text-dim);margin-top:3px">${t.avgBps} BPS</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function sortTable(key) {
+  if (currentSort === key) sortAsc = !sortAsc;
+  else { currentSort = key; sortAsc = true; }
+  renderTeams();
+}
+
+function renderTeamsTable(teams) {
+  const tbody = document.getElementById('teamsTableBody');
+  if (!teams.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-dim);padding:40px">No data yet</td></tr>';
+    return;
+  }
+  tbody.innerHTML = teams.map(t => `
+    <tr onclick="openTeamDetail(${t.teamNum})" style="cursor:pointer">
+      <td class="td-num">${t.teamNum}</td>
+      <td class="td-team">${t.teamName || '—'}</td>
+      <td>${t.matchCount}</td>
+      <td>${t.avgPoints}</td>
+      <td><strong>${t.totalRP}</strong></td>
+      <td>${t.avgBps}</td>
+      <td>${t.climbMax}</td>
+      <td>${t.role}</td>
+    </tr>
+  `).join('');
+}
+
+// ==================== TEAM DETAIL ====================
+function openTeamDetail(teamNum) {
+  document.getElementById('teamsListView').style.display = 'none';
+  document.getElementById('teamsTableView').style.display = 'none';
+  document.getElementById('teamDetailView').style.display = 'block';
+
+  const data = loadData();
+  const matches = data.matches.filter(m => m.teamNum == teamNum).sort((a,b) => a.matchNum - b.matchNum);
+  const pits = data.pits.filter(p => p.teamNum == teamNum);
+  const teamName = matches[0]?.teamName || pits[0]?.teamName || '';
+
+  const totalRP = matches.reduce((s,m) => s + (m.totalRP||0), 0);
+  const avgPts = matches.length ? Math.round(matches.reduce((s,m)=>s+m.totalPoints,0)/matches.length) : 0;
+  const avgBps = matches.length ? (matches.reduce((s,m)=>s+m.bps,0)/matches.length).toFixed(1) : (pits[0]?.bps || 0);
+  const climbMax = getMaxClimb(matches);
+
+  let html = `
+    <div class="team-detail-header">
+      <div>
+        <div class="team-number-big">${teamNum}</div>
+        <div class="team-name-big">${teamName || 'Unknown Team'}</div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <span class="badge badge-blue">${matches.length} Matches</span>
+          ${pits.length ? '<span class="badge badge-green">✓ Pit Scouted</span>' : '<span class="badge" style="opacity:0.4">No Pit Data</span>'}
+          <span class="badge badge-gold">${climbMax}</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:160px">
+        <div style="text-align:center">
+          <div style="font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:var(--text-bright)">${totalRP}</div>
+          <div style="font-size:0.65rem;color:var(--text-dim);letter-spacing:0.1em">TOTAL RP</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:var(--text-bright)">${avgPts}</div>
+          <div style="font-size:0.65rem;color:var(--text-dim);letter-spacing:0.1em">AVG PTS</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:var(--accent)">${avgBps}</div>
+          <div style="font-size:0.65rem;color:var(--text-dim);letter-spacing:0.1em">AVG BPS</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:var(--green)">${getMostCommonRole(matches)}</div>
+          <div style="font-size:0.65rem;color:var(--text-dim);letter-spacing:0.1em">ROLE</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (matches.length) {
+    html += `<div class="card"><div class="card-title">🎮 Match History</div>`;
+    matches.forEach(m => {
+      const allRP = m.totalRP;
+      html += `
+        <div style="border:1px solid var(--border);border-radius:5px;padding:12px;margin-bottom:8px;background:var(--bg)">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-family:'Orbitron',monospace;font-size:0.8rem;color:var(--accent)">Match ${m.matchNum}</span>
+              ${m.alliance ? `<span class="alliance-${m.alliance.toLowerCase()}">${m.alliance}</span>` : ''}
+              ${m.role ? `<span class="badge badge-${m.role==='Defender'?'orange':m.role==='Feeder'?'green':'blue'}">${m.role}</span>` : ''}
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="text-align:center">
+                <div style="font-family:'Orbitron',monospace;font-weight:900;color:var(--text-bright)">${m.totalPoints}</div>
+                <div style="font-size:0.6rem;color:var(--text-dim)">PTS</div>
+              </div>
+              <div style="text-align:center">
+                <div style="font-family:'Orbitron',monospace;font-weight:900;color:var(--gold)">${allRP}</div>
+                <div style="font-size:0.6rem;color:var(--text-dim)">RP</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:0.7rem">
+            <span class="score-chip">Auto fuel: ${m.autoFuelActive||0}</span>
+            <span class="score-chip">Tele fuel: ${m.teleFuelActive||0}</span>
+            <span class="score-chip">${m.bps || 0} BPS</span>
+            <span class="score-chip ${m.climbResult && m.climbResult.includes('Level') ? 'highlight' : ''}">${m.climbResult || 'No climb'}</span>
+            <span class="score-chip highlight">${m.totalPoints||0} pts</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;font-size:0.7rem;flex-wrap:wrap">
+            <span style="color:var(--text-dim)">RP: Climb <strong style="color:${m.climbRP?'var(--green)':'var(--text-dim)'}">${m.climbRP||0}</strong></span>
+            <span style="color:var(--text-dim)">| Fuel <strong style="color:${(m.fuelRP||0)>=2?'var(--purple)':(m.fuelRP||0)>=1?'var(--accent)':'var(--text-dim)'}">${m.fuelRP||0}</strong></span>
+            <span style="color:var(--text-dim)">| Win <strong style="color:${(m.winRP||0)>=2?'var(--gold)':(m.winRP||0)>=1?'var(--text)':'var(--text-dim)'}">${m.winRP||0}</strong></span>
+            <span style="color:var(--text-dim);font-size:0.65rem">(Alliance: ${m.allianceClimbPts||0} climb pts / ${m.allianceFuelPts||0} fuel pts)</span>
+            <span style="color:var(--text-dim)">| Ratings: Climb ${m.ratingClimb||'—'} | Score ${m.ratingScoring||'—'} | Intake ${m.ratingIntake||'—'}</span>
+          </div>
+          ${m.notes ? `<div style="margin-top:8px;font-size:0.8rem;color:var(--text-dim);font-style:italic">"${m.notes}"</div>` : ''}
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+
+  if (pits.length) {
+    const pit = pits[pits.length - 1];
+    html += `
+    <div class="card">
+      <div class="card-title">🔧 Pit Scout Data <span style="font-size:0.7rem;font-weight:400;color:var(--text-dim)">(Latest entry)</span></div>
+      <div class="info-row">
+        <div class="info-item"><div class="info-item-label">Intake Location</div><div class="info-item-val">${pit.intakeLoc || '—'}</div></div>
+        <div class="info-item"><div class="info-item-label">Ball Capacity</div><div class="info-item-val">${pit.ballCap || '—'}</div></div>
+        <div class="info-item"><div class="info-item-label">BPS (Pit)</div><div class="info-item-val">${pit.bps || '—'}</div></div>
+        <div class="info-item"><div class="info-item-label">Max Climb</div><div class="info-item-val">${pit.climbLevel || '—'}</div></div>
+        <div class="info-item"><div class="info-item-label">Traverse</div><div class="info-item-val">${pit.traverse || '—'}</div></div>
+        <div class="info-item"><div class="info-item-label">Auto Reliability</div><div class="info-item-val">${pit.autoRel || '—'}</div></div>
+        <div class="info-item"><div class="info-item-label">Preferred Role</div><div class="info-item-val">${pit.pitRole || '—'}</div></div>
+        <div class="info-item"><div class="info-item-label">Defense Capable</div><div class="info-item-val">${pit.defense || '—'}</div></div>
+      </div>
+      ${pit.intakeType ? `<div style="margin-top:8px"><div class="info-item-label" style="font-size:0.65rem;color:var(--text-dim)">INTAKE MECHANISM</div><div style="font-size:0.85rem;color:var(--text);margin-top:3px">${pit.intakeType}</div></div>` : ''}
+      ${pit.indexerType ? `<div style="margin-top:8px"><div class="info-item-label" style="font-size:0.65rem;color:var(--text-dim)">INDEXER / BALL PATH</div><div style="font-size:0.85rem;color:var(--text);margin-top:3px">${pit.indexerType}</div></div>` : ''}
+      ${pit.shooterType ? `<div style="margin-top:8px"><div class="info-item-label" style="font-size:0.65rem;color:var(--text-dim)">SHOOTER MECHANISM</div><div style="font-size:0.85rem;color:var(--text);margin-top:3px">${pit.shooterType}</div></div>` : ''}
+      ${pit.shootPos ? `<div style="margin-top:8px"><div class="info-item-label" style="font-size:0.65rem;color:var(--text-dim)">PREFERRED SHOOTING POSITION</div><div style="font-size:0.85rem;color:var(--text);margin-top:3px">${pit.shootPos}</div></div>` : ''}
+      ${pit.autoDesc ? `<div style="margin-top:8px;padding:10px;background:rgba(168,85,247,0.07);border:1px solid rgba(168,85,247,0.2);border-radius:5px"><div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;color:var(--purple);margin-bottom:4px">AUTO ROUTINE${pit.autoRel ? ' — ' + pit.autoRel.toUpperCase() : ''}</div><div style="font-size:0.85rem">${pit.autoDesc}</div></div>` : ''}
+      ${pit.climbDesc ? `<div style="margin-top:8px"><div class="info-item-label" style="font-size:0.65rem;color:var(--text-dim)">CLIMB MECHANISM</div><div style="font-size:0.85rem;color:var(--text);margin-top:3px">${pit.climbDesc}</div></div>` : ''}
+      ${pit.strategy ? `<div style="margin-top:8px;padding:10px;background:rgba(232,160,32,0.07);border:1px solid rgba(232,160,32,0.2);border-radius:5px"><div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;color:var(--gold);margin-bottom:4px">ALLIANCE STRATEGY</div><div style="font-size:0.85rem">${pit.strategy}</div></div>` : ''}
+      ${pit.strength ? `<div style="margin-top:8px;padding:10px;background:rgba(6,214,160,0.08);border:1px solid rgba(6,214,160,0.2);border-radius:5px"><div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;color:var(--green);margin-bottom:4px">GREATEST STRENGTH</div><div style="font-size:0.85rem">${pit.strength}</div></div>` : ''}
+      ${pit.trouble ? `<div style="margin-top:8px;padding:10px;background:rgba(204,34,0,0.06);border:1px solid rgba(204,34,0,0.2);border-radius:5px"><div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;color:var(--red-bright,#ee3300);margin-bottom:4px">BIGGEST CHALLENGE</div><div style="font-size:0.85rem">${pit.trouble}</div></div>` : ''}
+      ${pit.improvements ? `<div style="margin-top:8px"><div class="info-item-label" style="font-size:0.65rem;color:var(--text-dim)">IMPROVEMENTS SINCE BUILD</div><div style="font-size:0.85rem;color:var(--text);margin-top:3px">${pit.improvements}</div></div>` : ''}
+      ${pit.notes ? `<div style="margin-top:8px;font-size:0.8rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:8px">${pit.notes}</div>` : ''}
+    </div>`;
+  }
+
+  document.getElementById('teamDetailContent').innerHTML = html;
+}
+
+function closeTeamDetail() {
+  document.getElementById('teamDetailView').style.display = 'none';
+  if (currentView === 'list') {
+    document.getElementById('teamsListView').style.display = '';
+  } else {
+    document.getElementById('teamsTableView').style.display = '';
+  }
+}
+
+// ==================== EXPORT ====================
+function toCSVVal(v) {
+  if (v === null || v === undefined) return '';
+  const s = String(v);
+  return (s.includes(',') || s.includes('"') || s.includes('\n'))
+    ? '"' + s.replace(/"/g, '""') + '"'
+    : s;
+}
+
+function exportCSV(type) {
+  const data = loadData();
+
+  if (type === 'match' || type === 'combined') {
+    const mH = ['Timestamp','Scout','Match#','Team#','TeamName','Alliance',
+                 'AutoFuelActive','AutoFuelInactive','AutoClimbPts','AutoPoints',
+                 'TeleFuelActive','TeleFuelInactive','ClimbResult','ClimbPts','TelePoints',
+                 'TotalPoints','BPS','Role',
+                 'AllianceClimbPts','AllianceFuelPts','ClimbRP','FuelRP','WinRP','TotalRP',
+                 'RatingClimb','RatingScoring','RatingIntake','Notes'];
+    const mR = data.matches
+      .sort((a,b) => a.teamNum - b.teamNum || a.matchNum - b.matchNum)
+      .map(m => mH.map(h => toCSVVal({
+        'Timestamp':m.timestamp,'Scout':m.scoutName,'Match#':m.matchNum,'Team#':m.teamNum,
+        'TeamName':m.teamName,'Alliance':m.alliance,
+        'AutoFuelActive':m.autoFuelActive,'AutoFuelInactive':m.autoFuelInactive,
+        'AutoClimbPts':m.autoClimbPts,'AutoPoints':m.autoPoints,
+        'TeleFuelActive':m.teleFuelActive,'TeleFuelInactive':m.teleFuelInactive,
+        'ClimbResult':m.climbResult,'ClimbPts':m.climbPts,'TelePoints':m.telePoints,
+        'TotalPoints':m.totalPoints,'BPS':m.bps,'Role':m.role,
+        'AllianceClimbPts':m.allianceClimbPts,'AllianceFuelPts':m.allianceFuelPts,
+        'ClimbRP':m.climbRP,'FuelRP':m.fuelRP,'WinRP':m.winRP,'TotalRP':m.totalRP,
+        'RatingClimb':m.ratingClimb,'RatingScoring':m.ratingScoring,'RatingIntake':m.ratingIntake,
+        'Notes':m.notes
+      }[h])));
+    if (type === 'match') { downloadCSV('viking_match_data.csv', [mH, ...mR]); return; }
+    if (type === 'combined') {
+      const pH = ['Timestamp','Scout','Team#','TeamName','IntakeLoc','IntakeType','IndexerType',
+                  'BallCap','ShooterType','BPS','ClimbLevel','Traverse','Strength','Trouble','Notes'];
+      const pR = data.pits.sort((a,b)=>a.teamNum-b.teamNum).map(p => pH.map(h => toCSVVal({
+        'Timestamp':p.timestamp,'Scout':p.scoutName,'Team#':p.teamNum,'TeamName':p.teamName,
+        'IntakeLoc':p.intakeLoc,'IntakeType':p.intakeType,'IndexerType':p.indexerType,
+        'BallCap':p.ballCap,'ShooterType':p.shooterType,'BPS':p.bps,
+        'ClimbLevel':p.climbLevel,'Traverse':p.traverse,'Strength':p.strength,
+        'Trouble':p.trouble,'Notes':p.notes
+      }[h])));
+      downloadCSV('viking_combined_data.csv', [
+        ['=== MATCH SCOUTING DATA ==='], mH, ...mR, [], ['=== PIT SCOUTING DATA ==='], pH, ...pR
+      ]);
+      return;
+    }
+  }
+
+  if (type === 'pit') {
+    const pH = ['Timestamp','Scout','Team#','TeamName','IntakeLoc','IntakeType','IndexerType',
+                'BallCap','ShooterType','BPS','ClimbLevel','Traverse','Strength','Trouble','Notes'];
+    const pR = data.pits.sort((a,b)=>a.teamNum-b.teamNum).map(p => pH.map(h => toCSVVal({
+      'Timestamp':p.timestamp,'Scout':p.scoutName,'Team#':p.teamNum,'TeamName':p.teamName,
+      'IntakeLoc':p.intakeLoc,'IntakeType':p.intakeType,'IndexerType':p.indexerType,
+      'BallCap':p.ballCap,'ShooterType':p.shooterType,'BPS':p.bps,
+      'ClimbLevel':p.climbLevel,'Traverse':p.traverse,'Strength':p.strength,
+      'Trouble':p.trouble,'Notes':p.notes
+    }[h])));
+    downloadCSV('viking_pit_data.csv', [pH, ...pR]);
+  }
+}
+
+function downloadCSV(filename, rows) {
+  try {
+    const csv = '\uFEFF' + rows.map(r => Array.isArray(r) ? r.join(',') : '').join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); if(a.parentNode) a.parentNode.removeChild(a); }, 300);
+    showToast('Downloaded: ' + filename, 'success');
+  } catch(e) { showToast('Export failed: ' + e.message, 'error'); }
+}
+
+function exportJSON() {
+  try {
+    const data = loadData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'scout_backup_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); if(a.parentNode) a.parentNode.removeChild(a); }, 300);
+    showToast('Backup exported', 'success');
+  } catch(e) { showToast('Export failed: ' + e.message, 'error'); }
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.matches || !imported.pits) throw new Error('Invalid format');
+      const existing = loadData();
+      const existingMatchIds = new Set(existing.matches.map(m => m.id));
+      const existingPitIds = new Set(existing.pits.map(p => p.id));
+      let added = 0;
+      imported.matches.forEach(m => { if (!existingMatchIds.has(m.id)) { existing.matches.push(m); added++; } });
+      imported.pits.forEach(p => { if (!existingPitIds.has(p.id)) { existing.pits.push(p); added++; } });
+      saveData(existing);
+      renderTeams();
+      showToast(`✓ Merged ${added} new entries`, 'success');
+    } catch (err) {
+      showToast('Error: Invalid backup file', 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function clearAllData() {
+  if (confirm('Delete ALL scouting data? This cannot be undone.')) {
+    saveData({ matches: [], pits: [] });
+    renderTeams();
+    showToast('All data cleared', 'error');
+  }
+}
+
+// ==================== NAVIGATION ====================
+function switchPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab, .bottom-nav-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === page);
+  });
+  document.getElementById('page-' + page).classList.add('active');
+
+  if (page === 'teams') { showView(currentView); }
+  if (page === 'export') { renderGlobalStats(getTeamStats()); }
+  if (page === 'match') { renderSavedMatches(); }
+  if (page === 'pit') { renderSavedPits(); }
+
+  if (page === 'match' || page === 'pit') {
+    // mascots removed
+  }
+
+  window.scrollTo(0, 0);
+}
+
+// ==================== TOAST ====================
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.classList.remove('show'); }, 2800);
+}
+
+// ==================== INIT ====================
+updateHeaderCount();
+renderTeams();
+renderSavedMatches();
+renderSavedPits();
+
+
+// Mascot randomizer
+const MASCOT_M1 = "";
+const MASCOT_M2 = "";
+
+function placeMascots(pageId) {
+  // Remove old mascots
+  document.querySelectorAll('.mascot-float').forEach(e => e.remove());
+
+  const page = document.getElementById(pageId);
+  if (!page) return;
+
+  // Make page relative if not already
+  page.style.position = 'relative';
+
+  const configs = [
+    { src: MASCOT_M1, id: 'mf1' },
+    { src: MASCOT_M2, id: 'mf2' },
+  ];
+
+  const pageW = page.offsetWidth || 360;
+  const imgSize = 72;
+
+  configs.forEach((cfg, i) => {
+    const img = document.createElement('img');
+    img.src = cfg.src;
+    img.className = 'mascot-float';
+    img.alt = '';
+
+    // Random position: top/bottom half, left/right region, avoid dead center
+    const side = Math.random() < 0.5 ? 'left' : 'right';
+    const vertical = Math.random() < 0.5 ? 'top' : 'bottom';
+    const hOffset = Math.floor(Math.random() * 60) + 8; // 8–68px from edge
+    const vOffset = Math.floor(Math.random() * 80) + 8; // 8–88px from edge
+
+    // Alternate sides so they don't stack
+    const useSide = i === 0 ? 'left' : 'right';
+    const useVert = i === 0
+      ? (Math.random() < 0.5 ? 'top' : 'bottom')
+      : (Math.random() < 0.5 ? 'top' : 'bottom');
+
+    const vOff = Math.floor(Math.random() * 120) + 10;
+    const hOff = Math.floor(Math.random() * 40) + 4;
+
+    img.style.cssText = `
+      position: absolute;
+      ${useSide}: ${hOff}px;
+      ${useVert}: ${vOff}px;
+      height: ${imgSize}px;
+      opacity: 0.88;
+      pointer-events: none;
+      z-index: 0;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+      ${useSide === 'right' ? 'transform: scaleX(-1);' : ''}
+    `;
+
+    page.appendChild(img);
+  });
+}
+
+</script>
+</body>
+</html>
